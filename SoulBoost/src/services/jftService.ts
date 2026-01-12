@@ -45,26 +45,48 @@ export const jftService = {
   parseJFTContent(html: string, date: string): JFTContent | null {
     try {
       // Extract the main content from the HTML
-      // The JFT website structure: looking for the daily reading text
+      // The JFT website uses a simple table structure
       
-      // Find the title (date)
-      const titleMatch = html.match(/<h2[^>]*>(.*?)<\/h2>/i);
+      // Find the title (h1 tag contains the meditation title)
+      const titleMatch = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
       const title = titleMatch ? this.stripHtml(titleMatch[1]) : 'Just for Today';
 
-      // Find the main content between common markers
-      let contentMatch = html.match(/<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>(.*?)<\/div>/is);
-      if (!contentMatch) {
-        // Try alternative pattern
-        contentMatch = html.match(/<article[^>]*>(.*?)<\/article>/is);
-      }
-
-      if (!contentMatch) {
-        console.warn('Could not parse JFT content from HTML');
+      // Extract content from the table
+      // The content is in <td> tags within the table
+      const tableMatch = html.match(/<table[^>]*>(.*?)<\/table>/is);
+      
+      if (!tableMatch) {
+        console.warn('Could not find table in JFT HTML');
         return null;
       }
 
-      const fullContent = this.stripHtml(contentMatch[1]).trim();
+      // Get all table cell content
+      const tdMatches = tableMatch[1].match(/<td[^>]*>(.*?)<\/td>/gis);
       
+      if (!tdMatches || tdMatches.length === 0) {
+        console.warn('Could not find table cells in JFT HTML');
+        return null;
+      }
+
+      // Combine all td content, excluding the copyright
+      let fullContent = '';
+      for (const td of tdMatches) {
+        const stripped = this.stripHtml(td).trim();
+        // Skip the copyright line and page number
+        if (!stripped.includes('Copyright') && 
+            !stripped.includes('NA World Services') &&
+            !stripped.match(/^Page \d+$/)) {
+          fullContent += stripped + '\n\n';
+        }
+      }
+
+      fullContent = fullContent.trim();
+      
+      if (!fullContent) {
+        console.warn('Could not extract content from JFT HTML');
+        return null;
+      }
+
       // Create a preview (first 200 characters)
       const preview = fullContent.length > 200 
         ? fullContent.substring(0, 200) + '...'

@@ -55,9 +55,7 @@ const GratitudeInputScreen: React.FC<GratitudeInputScreenProps> = ({ navigation,
           <Text style={styles.backText}>← Cancel</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Gratitude</Text>
-        <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-          <Text style={styles.saveText}>Save</Text>
-        </TouchableOpacity>
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -81,6 +79,12 @@ const GratitudeInputScreen: React.FC<GratitudeInputScreenProps> = ({ navigation,
           </View>
         ))}
       </ScrollView>
+
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
+          <Text style={styles.saveText}>Save</Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -114,13 +118,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#2D1B4E',
   },
-  saveButton: {
-    paddingVertical: 8,
-  },
-  saveText: {
-    fontSize: 16,
-    color: '#9B6FDD',
-    fontWeight: 'bold',
+  headerSpacer: {
+    width: 60,
   },
   scrollView: {
     flex: 1,
@@ -170,6 +169,33 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     borderWidth: 2,
     borderColor: '#E8DFF5',
+  },
+  footer: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    paddingBottom: 30,
+    borderTopWidth: 1,
+    borderTopColor: '#E8DFF5',
+    alignItems: 'center',
+  },
+  saveButton: {
+    backgroundColor: '#9B6FDD',
+    paddingHorizontal: 60,
+    paddingVertical: 16,
+    borderRadius: 30,
+    minWidth: 200,
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#9B6FDD',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  saveText: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
 });
 

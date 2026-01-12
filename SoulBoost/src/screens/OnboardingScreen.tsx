@@ -55,7 +55,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
       await notificationService.requestPermission();
       await notificationService.scheduleDailyNotification();
       await storage.saveAppState({ hasCompletedOnboarding: true });
-      navigation.replace('Home');
+      navigation.replace('NameInput');
     }
   };
 

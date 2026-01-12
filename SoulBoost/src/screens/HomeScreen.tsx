@@ -26,6 +26,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [isLoadingJFT, setIsLoadingJFT] = useState(true);
   const [dailyEntry, setDailyEntry] = useState<DailyEntry | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [userName, setUserName] = useState<string>('');
 
   const loadJFTContent = useCallback(async () => {
     setIsLoadingJFT(true);
@@ -39,6 +40,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     setDailyEntry(entry);
   }, [today]);
 
+  const loadUserName = useCallback(async () => {
+    const appState = await storage.getAppState();
+    if (appState.userName) {
+      setUserName(appState.userName);
+    }
+  }, []);
+
   const onRefresh = async () => {
     setRefreshing(true);
     await loadJFTContent();
@@ -49,7 +57,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   useEffect(() => {
     loadJFTContent();
     loadDailyEntry();
-  }, [loadJFTContent, loadDailyEntry]);
+    loadUserName();
+  }, [loadJFTContent, loadDailyEntry, loadUserName]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -92,6 +101,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       }
     >
       <View style={styles.header}>
+        {userName && <Text style={styles.greeting}>Hi {userName}! 👋</Text>}
         <Text style={styles.date}>{dateUtils.formatDisplayDate(today)}</Text>
         <Text style={styles.motivationalMessage}>{motivationalMessage}</Text>
       </View>
@@ -195,6 +205,12 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 24,
+  },
+  greeting: {
+    fontSize: 24,
+    color: '#2D1B4E',
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
   date: {
     fontSize: 16,

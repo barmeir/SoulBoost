@@ -16,11 +16,13 @@ export interface DailyEntry {
 export interface AppState {
   hasCompletedOnboarding: boolean;
   notificationsEnabled: boolean;
+  userName?: string;
   entries: Record<string, DailyEntry>;
 }
 
 export type RootStackParamList = {
   Onboarding: undefined;
+  NameInput: undefined;
   Home: undefined;
   JFTDetail: { date: string; content: JFTContent };
   GratitudeInput: { date: string };
