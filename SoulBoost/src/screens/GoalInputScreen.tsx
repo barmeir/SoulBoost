@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -23,16 +23,16 @@ const GoalInputScreen: React.FC<GoalInputScreenProps> = ({ navigation, route }) 
   const { date } = route.params;
   const [goal, setGoal] = useState('');
 
-  useEffect(() => {
-    loadExistingGoal();
-  }, []);
-
-  const loadExistingGoal = async () => {
+  const loadExistingGoal = useCallback(async () => {
     const entry = await storage.getDailyEntry(date);
     if (entry?.goal) {
       setGoal(entry.goal);
     }
-  };
+  }, [date]);
+
+  useEffect(() => {
+    loadExistingGoal();
+  }, [loadExistingGoal]);
 
   const handleSave = async () => {
     await storage.saveDailyEntry(date, { goal });

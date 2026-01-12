@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
   ScrollView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -16,7 +15,6 @@ type OnboardingScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Onboarding'>;
 };
 
-const { width } = Dimensions.get('window');
 
 const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(0);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -23,16 +23,16 @@ const GratitudeInputScreen: React.FC<GratitudeInputScreenProps> = ({ navigation,
   const { date } = route.params;
   const [gratitudes, setGratitudes] = useState<string[]>(['', '', '', '']);
 
-  useEffect(() => {
-    loadExistingGratitudes();
-  }, []);
-
-  const loadExistingGratitudes = async () => {
+  const loadExistingGratitudes = useCallback(async () => {
     const entry = await storage.getDailyEntry(date);
     if (entry?.gratitudes) {
       setGratitudes(entry.gratitudes);
     }
-  };
+  }, [date]);
+
+  useEffect(() => {
+    loadExistingGratitudes();
+  }, [loadExistingGratitudes]);
 
   const updateGratitude = (index: number, value: string) => {
     const newGratitudes = [...gratitudes];

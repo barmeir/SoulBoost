@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -27,17 +27,17 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [dailyEntry, setDailyEntry] = useState<DailyEntry | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const loadJFTContent = async () => {
+  const loadJFTContent = useCallback(async () => {
     setIsLoadingJFT(true);
     const content = await jftService.fetchJFTContent(today);
     setJftContent(content);
     setIsLoadingJFT(false);
-  };
+  }, [today]);
 
-  const loadDailyEntry = async () => {
+  const loadDailyEntry = useCallback(async () => {
     const entry = await storage.getDailyEntry(today);
     setDailyEntry(entry);
-  };
+  }, [today]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -49,12 +49,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   useEffect(() => {
     loadJFTContent();
     loadDailyEntry();
-  }, []);
+  }, [loadJFTContent, loadDailyEntry]);
 
   useFocusEffect(
     React.useCallback(() => {
       loadDailyEntry();
-    }, [])
+    }, [loadDailyEntry])
   );
 
   const handleJFTPress = () => {

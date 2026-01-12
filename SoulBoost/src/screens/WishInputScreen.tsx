@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -23,16 +23,16 @@ const WishInputScreen: React.FC<WishInputScreenProps> = ({ navigation, route }) 
   const { date } = route.params;
   const [wish, setWish] = useState('');
 
-  useEffect(() => {
-    loadExistingWish();
-  }, []);
-
-  const loadExistingWish = async () => {
+  const loadExistingWish = useCallback(async () => {
     const entry = await storage.getDailyEntry(date);
     if (entry?.wish) {
       setWish(entry.wish);
     }
-  };
+  }, [date]);
+
+  useEffect(() => {
+    loadExistingWish();
+  }, [loadExistingWish]);
 
   const handleSave = async () => {
     await storage.saveDailyEntry(date, { wish });
