@@ -102,6 +102,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     >
       <View style={styles.header}>
         {userName && <Text style={styles.greeting}>Hi {userName}! 👋</Text>}
+        <Text style={styles.notePrivacy}>Your information stays with you. All data is anonymous, private, and stored only on this device — never on our servers.</Text>
         <Text style={styles.date}>{dateUtils.formatDisplayDate(today)}</Text>
         <Text style={styles.motivationalMessage}>{motivationalMessage}</Text>
       </View>
@@ -210,8 +211,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#2D1B4E',
     fontWeight: 'bold',
-    marginBottom: 8,
+    margin: 8,
   },
+  notePrivacy: {
+    fontSize: 8,
+    color: '#827c89ff',
+    fontStyle: 'italic',
+    marginBottom: 12,
+  },  
   date: {
     fontSize: 16,
     color: '#7B4FD4',
@@ -223,6 +230,7 @@ const styles = StyleSheet.create({
     color: '#2D1B4E',
     fontWeight: '600',
     lineHeight: 28,
+    alignContent: 'center',
   },
   jftCard: {
     backgroundColor: '#FFFFFF',

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import { storage } from '../utils/storage';
 
@@ -13,7 +13,7 @@ import GoalInputScreen from '../screens/GoalInputScreen';
 import WishInputScreen from '../screens/WishInputScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppNavigator: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +47,7 @@ const AppNavigator: React.FC = () => {
         initialRouteName={getInitialRoute()}
         screenOptions={{
           headerShown: false,
-          cardStyle: { backgroundColor: '#F8F4FF' },
+        contentStyle: { backgroundColor: '#F8F4FF' },
         }}
       >
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />

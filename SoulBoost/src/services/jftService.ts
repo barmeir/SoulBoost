@@ -72,11 +72,13 @@ export const jftService = {
       let fullContent = '';
       for (const td of tdMatches) {
         const stripped = this.stripHtml(td).trim();
-        // Skip the copyright line and page number
-        if (!stripped.includes('Copyright') && 
-            !stripped.includes('NA World Services') &&
-            !stripped.match(/^Page \d+$/)) {
-          fullContent += stripped + '\n\n';
+        // Skip the copyright line, page number, and date
+        if (!stripped.includes('Copyright') 
+          && !stripped.includes('NA World Services') 
+          && !stripped.match(/^Page \d+$/)
+          && !stripped.match(/^\w+ \d{1,2}, \d{4}$/)) {  // Skip date in format like "January 18, 2026"
+            //This regex /^\w+ \d{1,2}, \d{4}$/ matches strings that start with a word (month), followed by a space, 1-2 digits (day), a comma, space, and 4 digits (year). It should effectively remove date lines from the content. If the date format varies (e.g., no comma or different order), let me know for adjustments! Test it with the actual HTML to confirm.
+          fullContent += stripped + '\n';
         }
       }
 
@@ -86,6 +88,7 @@ export const jftService = {
         console.warn('Could not extract content from JFT HTML');
         return null;
       }
+        console.log('fullContent', fullContent);
 
       // Create a preview (first 200 characters)
       const preview = fullContent.length > 200 
