@@ -8,12 +8,12 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import { storage } from '../utils/storage';
 
 type NameInputScreenProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'NameInput'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'NameInput'>;
 };
 
 const NameInputScreen: React.FC<NameInputScreenProps> = ({ navigation }) => {

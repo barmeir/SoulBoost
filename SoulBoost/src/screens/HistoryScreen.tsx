@@ -6,13 +6,13 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, DailyEntry } from '../types';
 import { storage } from '../utils/storage';
 import { dateUtils } from '../utils/dateUtils';
 
 type HistoryScreenProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'History'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'History'>;
 };
 
 const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {

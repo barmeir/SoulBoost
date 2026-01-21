@@ -8,15 +8,19 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { RootStackParamList, JFTContent, DailyEntry } from '../types';
 import { dateUtils } from '../utils/dateUtils';
 import { jftService } from '../services/jftService';
 import { storage } from '../utils/storage';
-
+import { scale, moderateScale, isSmallScreen, isLargeScreen } from '../utils/responsive';
+//
 type HomeScreenProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'Home'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
 };
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
@@ -93,19 +97,21 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const isWishComplete = dailyEntry?.wish && dailyEntry.wish.length > 0;
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#9B6FDD" />
-      }
-    >
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#9B6FDD" />
+        }
+      >
       <View style={styles.header}>
-        {userName && <Text style={styles.greeting}>Hi {userName}! 👋</Text>}
-        <Text style={styles.notePrivacy}>Your information stays with you. All data is anonymous, private, and stored only on this device — never on our servers.</Text>
+        <Text style={styles.greeting}>Hi {userName || 'there'}! 👋</Text>
+        <Text style={styles.notePrivacy}>* Your information stays with you. All data is anonymous, private, and stored only on this device — never on our servers.</Text>
         <Text style={styles.date}>{dateUtils.formatDisplayDate(today)}</Text>
         <Text style={styles.motivationalMessage}>{motivationalMessage}</Text>
       </View>
+        <Text style={styles.jftTitle}>Just for Today</Text>
 
       <TouchableOpacity
         style={styles.jftCard}
@@ -113,7 +119,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         activeOpacity={0.8}
         disabled={!jftContent}
       >
-        <Text style={styles.jftTitle}>Just for Today</Text>
         {isLoadingJFT ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color="#9B6FDD" />
@@ -121,6 +126,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </View>
         ) : jftContent ? (
           <>
+        <Text style={styles.jftTitle}>{jftContent.title}</Text>
+
             <Text style={styles.jftPreview}>{jftContent.preview}</Text>
             <Text style={styles.tapToRead}>Tap to read full message →</Text>
           </>
@@ -192,110 +199,125 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <Text style={styles.historyButtonText}>📖 View Your Journey</Text>
       </TouchableOpacity>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F8F4FF',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F8F4FF',
   },
   contentContainer: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: scale(20),
+    paddingBottom: scale(40),
   },
   header: {
-    marginBottom: 24,
+    marginTop: scale(10),
+    marginBottom: scale(24),
   },
   greeting: {
-    fontSize: 24,
+    fontSize: moderateScale(24),
     color: '#2D1B4E',
     fontWeight: 'bold',
-    margin: 8,
+    margin: scale(8),
+    
   },
   notePrivacy: {
-    fontSize: 8,
-    color: '#827c89ff',
+    fontSize: moderateScale(10),
+    color: '#554c60ff',
     fontStyle: 'italic',
-    marginBottom: 12,
+    marginBottom: scale(8),
   },  
   date: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     color: '#7B4FD4',
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: scale(8),
   },
+
   motivationalMessage: {
-    fontSize: 20,
+    backgroundColor: '#f4eca6ff',
+    borderRadius: scale(16),
+    fontSize: moderateScale(20),
+    borderColor: '#f3ce7dff',
+    borderWidth: scale(1),
     color: '#2D1B4E',
-    fontWeight: '600',
-    lineHeight: 28,
+    fontWeight: '500',
+    lineHeight: scale(28),
+    textAlign: 'center',
     alignContent: 'center',
+    padding: scale(4),
+
   },
   jftCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-    elevation: 2,
+    borderRadius: scale(16),
+    padding: scale(16),
+    marginBottom: scale(24),
+    elevation: 1,
     shadowColor: '#9B6FDD',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowRadius: scale(8),
   },
   jftTitle: {
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontWeight: 'bold',
     color: '#2D1B4E',
-    marginBottom: 12,
+    marginBottom: scale(12),
   },
   jftPreview: {
-    fontSize: 15,
+    fontSize: moderateScale(15),
     color: '#5A4A6A',
-    lineHeight: 22,
-    marginBottom: 12,
+    lineHeight: scale(16),
+    marginBottom: scale(12),
   },
   tapToRead: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     color: '#9B6FDD',
     fontWeight: '600',
   },
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: scale(20),
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     color: '#9B6FDD',
-    marginLeft: 12,
+    marginLeft: scale(12),
   },
   errorText: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     color: '#D4766A',
     fontStyle: 'italic',
   },
   actionsSection: {
-    marginBottom: 24,
+    marginBottom: scale(24),
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontWeight: 'bold',
     color: '#2D1B4E',
-    marginBottom: 16,
+    marginBottom: scale(16),
   },
   actionCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    borderLeftWidth: 4,
+    borderRadius: scale(12),
+    padding: scale(16),
+    marginBottom: scale(12),
+    borderLeftWidth: scale(4),
     borderLeftColor: '#9B6FDD',
     elevation: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
   },
   completedCard: {
     borderLeftColor: '#6BC89B',
@@ -304,37 +326,37 @@ const styles = StyleSheet.create({
   actionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: scale(8),
   },
   actionIcon: {
-    fontSize: 24,
-    marginRight: 10,
+    fontSize: moderateScale(24),
+    marginRight: scale(10),
   },
   actionTitle: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontWeight: 'bold',
     color: '#2D1B4E',
     flex: 1,
   },
   checkmark: {
-    fontSize: 20,
+    fontSize: moderateScale(20),
     color: '#6BC89B',
     fontWeight: 'bold',
   },
   actionDescription: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     color: '#5A4A6A',
-    lineHeight: 20,
-    marginLeft: 34,
+    lineHeight: scale(20),
+    marginLeft: scale(34),
   },
   historyButton: {
     backgroundColor: '#E8DFF5',
-    borderRadius: 12,
-    padding: 18,
+    borderRadius: scale(12),
+    padding: scale(18),
     alignItems: 'center',
   },
   historyButtonText: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontWeight: '600',
     color: '#7B4FD4',
   },

@@ -6,13 +6,13 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
 import { dateUtils } from '../utils/dateUtils';
 
 type JFTDetailScreenProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'JFTDetail'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'JFTDetail'>;
   route: RouteProp<RootStackParamList, 'JFTDetail'>;
 };
 

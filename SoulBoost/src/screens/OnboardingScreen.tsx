@@ -6,13 +6,13 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import { storage } from '../utils/storage';
 import { notificationService } from '../services/notificationService';
 
 type OnboardingScreenProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'Onboarding'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Onboarding'>;
 };
 
 
@@ -51,17 +51,22 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      handleSkip();
       // Last step - request permissions and complete onboarding
-      await notificationService.requestPermission();
-      await notificationService.scheduleDailyNotification();
-      await storage.saveAppState({ hasCompletedOnboarding: true });
-      navigation.replace('NameInput');
+      // await notificationService.requestPermission();
+      // await notificationService.scheduleDailyNotification();
+      // await storage.saveAppState({ hasCompletedOnboarding: true });
+      // navigation.replace('NameInput');
     }
   };
 
   const handleSkip = async () => {
-    await storage.saveAppState({ hasCompletedOnboarding: true });
-    navigation.replace('Home');
+      await notificationService.requestPermission();
+      await notificationService.scheduleDailyNotification();
+      await storage.saveAppState({ hasCompletedOnboarding: true });
+      navigation.replace('NameInput');
+    // await storage.saveAppState({ hasCompletedOnboarding: true });
+    // navigation.replace('Home');
   };
 
   return (

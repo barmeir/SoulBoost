@@ -48,8 +48,10 @@ export const jftService = {
       // The JFT website uses a simple table structure
       
       // Find the title (h1 tag contains the meditation title)
+      
       const titleMatch = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
       const title = titleMatch ? this.stripHtml(titleMatch[1]) : 'Just for Today';
+        console.log('title', title);
 
       // Extract content from the table
       // The content is in <td> tags within the table
@@ -75,10 +77,11 @@ export const jftService = {
         // Skip the copyright line, page number, and date
         if (!stripped.includes('Copyright') 
           && !stripped.includes('NA World Services') 
+                  && !stripped.match(title)
           && !stripped.match(/^Page \d+$/)
           && !stripped.match(/^\w+ \d{1,2}, \d{4}$/)) {  // Skip date in format like "January 18, 2026"
             //This regex /^\w+ \d{1,2}, \d{4}$/ matches strings that start with a word (month), followed by a space, 1-2 digits (day), a comma, space, and 4 digits (year). It should effectively remove date lines from the content. If the date format varies (e.g., no comma or different order), let me know for adjustments! Test it with the actual HTML to confirm.
-          fullContent += stripped + '\n';
+          fullContent += stripped + '\n\n';
         }
       }
 
@@ -91,9 +94,11 @@ export const jftService = {
         console.log('fullContent', fullContent);
 
       // Create a preview (first 200 characters)
-      const preview = fullContent.length > 200 
-        ? fullContent.substring(0, 200) + '...'
+      const preview = fullContent.length > 150
+        ? fullContent.substring(0, 150) + '...'
         : fullContent;
+        console.log('title', title);
+        console.log('date', date);
 
       return {
         date,

@@ -9,13 +9,13 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
 import { storage } from '../utils/storage';
 
 type WishInputScreenProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'WishInput'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'WishInput'>;
   route: RouteProp<RootStackParamList, 'WishInput'>;
 };
 
