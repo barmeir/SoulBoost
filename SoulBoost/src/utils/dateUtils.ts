@@ -1,6 +1,29 @@
 export const dateUtils = {
+  /**
+   * Returns today's date as an ISO string (YYYY-MM-DD)
+   */
   getTodayString(): string {
     const date = new Date();
+    return date.toISOString().split('T')[0];
+  },
+
+  /**
+   * Returns yesterday's date as an ISO string (YYYY-MM-DD)
+   */
+  getYesterdayString(): string {
+    const date = new Date();
+    date.setDate(date.getDate() - 1);
+    return date.toISOString().split('T')[0];
+  },
+
+  /**
+   * Returns the previous day's date from a given date string
+   * @param dateString - Date in YYYY-MM-DD format
+   * @returns Previous day's date in YYYY-MM-DD format
+   */
+  getPreviousDateString(dateString: string): string {
+    const date = new Date(dateString);
+    date.setDate(date.getDate() - 1);
     return date.toISOString().split('T')[0];
   },
 

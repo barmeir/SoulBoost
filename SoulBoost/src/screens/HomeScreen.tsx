@@ -13,10 +13,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { RootStackParamList, JFTContent, DailyEntry } from '../types';
+import { RootStackParamList, JFTContent, DailyEntry, StreakInfo } from '../types';
 import { dateUtils } from '../utils/dateUtils';
 import { jftService } from '../services/jftService';
 import { storage } from '../utils/storage';
+import { streakService } from '../services/streakService';
 import { scale, moderateScale, isSmallScreen, isLargeScreen } from '../utils/responsive';
 //
 type HomeScreenProps = {
@@ -31,6 +32,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [dailyEntry, setDailyEntry] = useState<DailyEntry | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [userName, setUserName] = useState<string>('');
+  const [streakInfo, setStreakInfo] = useState<StreakInfo | null>(null);
 
   const loadJFTContent = useCallback(async () => {
     setIsLoadingJFT(true);
@@ -51,10 +53,17 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   }, []);
 
+  // Load streak information from storage
+  const loadStreakInfo = useCallback(async () => {
+    const info = await streakService.getStreakInfo();
+    setStreakInfo(info);
+  }, []);
+
   const onRefresh = async () => {
     setRefreshing(true);
     await loadJFTContent();
     await loadDailyEntry();
+    await loadStreakInfo();
     setRefreshing(false);
   };
 
@@ -62,12 +71,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     loadJFTContent();
     loadDailyEntry();
     loadUserName();
-  }, [loadJFTContent, loadDailyEntry, loadUserName]);
+    loadStreakInfo();
+  }, [loadJFTContent, loadDailyEntry, loadUserName, loadStreakInfo]);
 
   useFocusEffect(
     React.useCallback(() => {
       loadDailyEntry();
-    }, [loadDailyEntry])
+      loadStreakInfo();
+    }, [loadDailyEntry, loadStreakInfo])
   );
 
   const handleJFTPress = () => {
@@ -106,13 +117,22 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         }
       >
       <View style={styles.header}>
-        <Text style={styles.greeting}>Hi {userName || 'there'}! 👋</Text>
+        <View style={styles.headerTop}>
+          <Text style={styles.greeting}>Hi {userName || 'there'}! 👋</Text>
+          {/* Streak Badge - Compact button on the right */}
+          {streakInfo && (
+            <View style={styles.streakBadge}>
+              <Text style={styles.streakEmoji}>🔥</Text>
+              <Text style={styles.streakNumber}>{streakInfo.currentStreak}</Text>
+            </View>
+          )}
+        </View>
         <Text style={styles.notePrivacy}>* Your information stays with you. All data is anonymous, private, and stored only on this device — never on our servers.</Text>
         <Text style={styles.date}>{dateUtils.formatDisplayDate(today)}</Text>
         <Text style={styles.motivationalMessage}>{motivationalMessage}</Text>
       </View>
-        <Text style={styles.jftTitle}>Just for Today</Text>
 
+      <Text style={styles.sectionTitle}>Just for Today</Text>
       <TouchableOpacity
         style={styles.jftCard}
         onPress={handleJFTPress}
@@ -126,10 +146,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </View>
         ) : jftContent ? (
           <>
-        <Text style={styles.jftTitle}>{jftContent.title}</Text>
-
-            <Text style={styles.jftPreview}>{jftContent.preview}</Text>
-            <Text style={styles.tapToRead}>Tap to read full message →</Text>
+          <Text style={styles.jftTitle}>{jftContent.title}</Text>
+          <Text style={styles.jftPreview}>{jftContent.preview}</Text>
+          <Text style={styles.tapToRead}>Tap to read full message →</Text>
           </>
         ) : (
           <Text style={styles.errorText}>Unable to load content. Pull to refresh.</Text>
@@ -231,6 +250,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(10),
     color: '#554c60ff',
     fontStyle: 'italic',
+    marginHorizontal: scale(4),
     marginBottom: scale(8),
   },  
   date: {
@@ -241,24 +261,26 @@ const styles = StyleSheet.create({
   },
 
   motivationalMessage: {
-    backgroundColor: '#f4eca6ff',
-    borderRadius: scale(16),
+    backgroundColor: '#F8F4FF',
+    borderRadius: scale(20),
     fontSize: moderateScale(20),
-    borderColor: '#f3ce7dff',
-    borderWidth: scale(1),
+    borderColor: '#ebd571ff',
+    borderWidth: scale(3),
     color: '#2D1B4E',
     fontWeight: '500',
     lineHeight: scale(28),
     textAlign: 'center',
     alignContent: 'center',
-    padding: scale(4),
+    paddingVertical: scale(4),
+    paddingHorizontal: scale(8),
+    marginHorizontal: scale(16),
 
   },
   jftCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: scale(16),
-    padding: scale(16),
-    marginBottom: scale(24),
+    padding: scale(10),
+    marginBottom: scale(20),
     elevation: 1,
     shadowColor: '#9B6FDD',
     shadowOffset: { width: 0, height: 2 },
@@ -266,11 +288,13 @@ const styles = StyleSheet.create({
     shadowRadius: scale(8),
   },
   jftTitle: {
-    fontSize: moderateScale(18),
+    fontSize: moderateScale(16),
     fontWeight: 'bold',
     color: '#2D1B4E',
-    marginBottom: scale(12),
+    marginBottom: scale(10),
+    textAlign: 'center',
   },
+  
   jftPreview: {
     fontSize: moderateScale(15),
     color: '#5A4A6A',
@@ -304,7 +328,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(18),
     fontWeight: 'bold',
     color: '#2D1B4E',
-    marginBottom: scale(16),
+    marginBottom: scale(8),
   },
   actionCard: {
     backgroundColor: '#FFFFFF',
@@ -359,6 +383,35 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     fontWeight: '600',
     color: '#7B4FD4',
+  },
+  // Header layout for greeting and streak badge
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  // Streak badge styles - compact button on right side
+  streakBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#7B4FD4',
+    paddingHorizontal: scale(12),
+    paddingVertical: scale(6),
+    borderRadius: scale(20),
+    elevation: 2,
+    shadowColor: '#7B4FD4',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: scale(4),
+  },
+  streakEmoji: {
+    fontSize: moderateScale(14),
+    marginRight: scale(4),
+  },
+  streakNumber: {
+    fontSize: moderateScale(14),
+    fontWeight: 'bold',
+    color: '#FFFFFF',
   },
 });
 
