@@ -11,6 +11,9 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import { storage } from '../utils/storage';
+import { scale, moderateScale } from '../utils/responsive';
+
+
 
 type NameInputScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'NameInput'>;
@@ -29,7 +32,8 @@ const NameInputScreen: React.FC<NameInputScreenProps> = ({ navigation }) => {
   return (
     <KeyboardAvoidingView 
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
       <View style={styles.content}>
         <Text style={styles.icon}>👋</Text>
@@ -37,6 +41,7 @@ const NameInputScreen: React.FC<NameInputScreenProps> = ({ navigation }) => {
         <Text style={styles.subtitle}>
           Before we begin, what's your name?
         </Text>
+
 
         <TextInput
           style={styles.input}
@@ -48,6 +53,9 @@ const NameInputScreen: React.FC<NameInputScreenProps> = ({ navigation }) => {
           returnKeyType="done"
           onSubmitEditing={handleContinue}
         />
+
+        <Text style={styles.notePrivacy}>* Your information stays with you. All data is anonymous, private, and stored only on this device — never on our servers.</Text>
+        
 
         <TouchableOpacity 
           onPress={handleContinue} 
@@ -102,6 +110,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: 'center',
   },
+    notePrivacy: {
+      fontSize: moderateScale(10),
+      color: '#554c60ff',
+      fontStyle: 'italic',
+      marginHorizontal: scale(4),
+      marginBottom: scale(8),
+    }, 
   continueButton: {
     backgroundColor: '#9B6FDD',
     paddingHorizontal: 60,

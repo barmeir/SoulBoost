@@ -10,6 +10,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import { storage } from '../utils/storage';
 import { notificationService } from '../services/notificationService';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Logo from '../components/Logo';
+import { moderateScale, scale } from '../utils/responsive';
+
 
 type OnboardingScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Onboarding'>;
@@ -21,26 +25,31 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
 
   const steps = [
     {
+      emoji: '✨',
       title: 'Welcome to Soul Boost',
       subtitle: 'Start your spark, Lift your spirit daily',
       description: 'A daily companion to help you cultivate gratitude, set intentions, and find inspiration through daily readings.',
     },
     {
+      emoji: '📖',
       title: 'Daily Inspiration',
       subtitle: 'Just for Today',
       description: 'Receive daily readings from Narcotics Anonymous that provide wisdom, hope, and encouragement for your journey.',
     },
     {
+      emoji: '🙏',
       title: 'Express Gratitude',
       subtitle: 'Count Your Blessings',
       description: 'Record four things you\'re grateful for each day. Gratitude transforms your perspective and brings more joy into your life.',
     },
     {
+      emoji: '🎯',
       title: 'Set Your Intention',
       subtitle: 'Goals & Wishes',
       description: 'Write down your goal for today and express your deepest wish. Watch as your intentions manifest into reality.',
     },
     {
+      emoji: '🌅',
       title: 'Morning Reminders',
       subtitle: 'Start Each Day Right',
       description: 'Receive a gentle notification every morning at 8 AM to begin your day with positivity and purpose.',
@@ -70,6 +79,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
   };
 
   return (
+    <SafeAreaView style={styles.container}>
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.stepContainer}>
@@ -78,6 +88,13 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
           </Text>
           
           <View style={styles.content}>
+            {currentStep === 0 ? (
+              <View style={styles.logoContainer}>
+                <Logo size="large" showText={false} />
+              </View>
+            ) : (
+              <Text style={styles.emoji}>{steps[currentStep].emoji}</Text>
+            )}
             <Text style={styles.title}>{steps[currentStep].title}</Text>
             <Text style={styles.subtitle}>{steps[currentStep].subtitle}</Text>
             <Text style={styles.description}>{steps[currentStep].description}</Text>
@@ -100,6 +117,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
       <View style={styles.footer}>
         {currentStep < steps.length - 1 && (
           <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
+
             <Text style={styles.skipText}>Skip</Text>
           </TouchableOpacity>
         )}
@@ -111,6 +129,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     </View>
+    </SafeAreaView>
   );
 };
 
@@ -139,6 +158,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 60,
   },
+  emoji: {
+    fontSize: 80,
+    marginBottom: 24,
+  },
+  logoContainer: {
+    marginBottom: 24,
+  },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
@@ -158,6 +184,13 @@ const styles = StyleSheet.create({
     color: '#5A4A6A',
     textAlign: 'center',
     lineHeight: 24,
+  },
+  notePrivacy: {
+    fontSize: moderateScale(10),
+    color: '#554c60ff',
+    fontStyle: 'italic',
+    marginHorizontal: scale(4),
+    marginBottom: scale(8),
   },
   dotsContainer: {
     flexDirection: 'row',

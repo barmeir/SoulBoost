@@ -13,6 +13,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
 import { storage } from '../utils/storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 type WishInputScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'WishInput'>;
@@ -40,9 +42,12 @@ const WishInputScreen: React.FC<WishInputScreenProps> = ({ navigation, route }) 
   };
 
   return (
+    <SafeAreaView style={styles.container}>
     <KeyboardAvoidingView 
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+
     >
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
@@ -51,6 +56,7 @@ const WishInputScreen: React.FC<WishInputScreenProps> = ({ navigation, route }) 
         <Text style={styles.headerTitle}>Today's Wish</Text>
         <View style={styles.headerSpacer} />
       </View>
+
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.icon}>✨</Text>
@@ -84,6 +90,7 @@ const WishInputScreen: React.FC<WishInputScreenProps> = ({ navigation, route }) 
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -92,30 +99,52 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8F4FF',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E8DFF5',
-  },
-  backButton: {
-    paddingVertical: 8,
-  },
+  // header: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   justifyContent: 'space-between',
+  //   paddingHorizontal: 20,
+  //   //paddingTop: 60,
+  //   paddingBottom: 20,
+  //   backgroundColor: '#FFFFFF',
+  //   borderBottomWidth: 1,
+  //   borderBottomColor: '#E8DFF5',
+  // },
+header: {
+  backgroundColor: '#FFFFFF',
+  borderBottomWidth: 1,
+  borderBottomColor: '#E8DFF5',
+  padding: 20,
+  // paddingHorizontal: 20,
+  // paddingBottom: 15,
+},
+backButton: {
+  alignSelf: 'flex-start',
+  //paddingVertical: 8,
+},
+
+headerTitle: {
+  fontSize: 20,
+  fontWeight: 'bold',
+  color: '#2D1B4E',
+  textAlign: 'center',
+  marginTop: 5,
+},
+
+
+  // backButton: {
+  //   paddingVertical: 8,
+  // },
   backText: {
     fontSize: 16,
     color: '#9B6FDD',
     fontWeight: '600',
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2D1B4E',
-  },
+  // headerTitle: {
+  //   fontSize: 18,
+  //   fontWeight: 'bold',
+  //   color: '#2D1B4E',
+  // },
   headerSpacer: {
     width: 60,
   },
@@ -177,7 +206,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    paddingBottom: 30,
+    //paddingBottom: 30,
     borderTopWidth: 1,
     borderTopColor: '#E8DFF5',
     alignItems: 'center',

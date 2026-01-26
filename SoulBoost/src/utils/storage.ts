@@ -39,6 +39,8 @@ export const storage = {
   async getDailyEntry(date: string): Promise<DailyEntry | null> {
     try {
       const state = await this.getAppState();
+      //console.debug('Getting daily entry for date', date, ':', state.entries[date]);
+
       return state.entries[date] || null;
     } catch (error) {
       console.error('Error getting daily entry:', error);

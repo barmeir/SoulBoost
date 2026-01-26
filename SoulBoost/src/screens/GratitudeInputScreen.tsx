@@ -13,6 +13,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
 import { storage } from '../utils/storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 type GratitudeInputScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'GratitudeInput'>;
@@ -25,6 +27,8 @@ const GratitudeInputScreen: React.FC<GratitudeInputScreenProps> = ({ navigation,
 
   const loadExistingGratitudes = useCallback(async () => {
     const entry = await storage.getDailyEntry(date);
+    console.log('Loaded entry for date', date, ':', entry);
+    console.log('Existing gratitudes:', entry?.gratitudes);
     if (entry?.gratitudes) {
       setGratitudes(entry.gratitudes);
     }
@@ -46,10 +50,12 @@ const GratitudeInputScreen: React.FC<GratitudeInputScreenProps> = ({ navigation,
   };
 
   return (
+    <SafeAreaView style={styles.container}>
     <KeyboardAvoidingView 
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      >
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={styles.backText}>← Cancel</Text>
@@ -64,6 +70,9 @@ const GratitudeInputScreen: React.FC<GratitudeInputScreenProps> = ({ navigation,
         <Text style={styles.subtitle}>
           Taking a moment to appreciate the good things in life can transform your perspective.
         </Text>
+
+
+          <Text >{gratitudes}</Text>
 
         {gratitudes.map((gratitude, index) => (
           <View key={index} style={styles.inputContainer}>
@@ -86,6 +95,7 @@ const GratitudeInputScreen: React.FC<GratitudeInputScreenProps> = ({ navigation,
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -99,7 +109,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingTop: 40,
     paddingBottom: 20,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
@@ -114,8 +124,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
+    textDecorationLine: 'underline',
     color: '#2D1B4E',
   },
   headerSpacer: {
@@ -174,7 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    paddingBottom: 30,
+    paddingBottom: 10,
     borderTopWidth: 1,
     borderTopColor: '#E8DFF5',
     alignItems: 'center',
@@ -186,7 +197,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     minWidth: 200,
     alignItems: 'center',
-    elevation: 3,
+    elevation: 4,
     shadowColor: '#9B6FDD',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

@@ -19,6 +19,7 @@ import { jftService } from '../services/jftService';
 import { storage } from '../utils/storage';
 import { streakService } from '../services/streakService';
 import { scale, moderateScale, isSmallScreen, isLargeScreen } from '../utils/responsive';
+import { IOSShowPreviewsSetting } from '@notifee/react-native';
 //
 type HomeScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -33,6 +34,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [userName, setUserName] = useState<string>('');
   const [streakInfo, setStreakInfo] = useState<StreakInfo | null>(null);
+
+  
+  let isJftComplete = false;
 
   const loadJFTContent = useCallback(async () => {
     setIsLoadingJFT(true);
@@ -82,8 +86,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   );
 
   const handleJFTPress = () => {
+    isJftComplete= true;
     if (jftContent) {
-      navigation.navigate('JFTDetail', { date: today, content: jftContent });
+      navigation.navigate('JFTDetail', { date: today, content: jftContent, });
     }
   };
 
@@ -107,6 +112,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const isGoalComplete = dailyEntry?.goal && dailyEntry.goal.length > 0;
   const isWishComplete = dailyEntry?.wish && dailyEntry.wish.length > 0;
 
+
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -127,18 +134,20 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </View>
           )}
         </View>
-        <Text style={styles.notePrivacy}>* Your information stays with you. All data is anonymous, private, and stored only on this device — never on our servers.</Text>
+        {/* <Text style={styles.notePrivacy}>* Your information stays with you. All data is anonymous, private, and stored only on this device — never on our servers.</Text> */}
         <Text style={styles.date}>{dateUtils.formatDisplayDate(today)}</Text>
         <Text style={styles.motivationalMessage}>{motivationalMessage}</Text>
       </View>
 
       <Text style={styles.sectionTitle}>Just for Today</Text>
       <TouchableOpacity
-        style={styles.jftCard}
+        style={[styles.actionCard, isJftComplete && styles.completedCard]}
+        
         onPress={handleJFTPress}
         activeOpacity={0.8}
         disabled={!jftContent}
       >
+
         {isLoadingJFT ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color="#9B6FDD" />
@@ -146,9 +155,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </View>
         ) : jftContent ? (
           <>
+
+          {isJftComplete && <Text style={styles.checkmark}>✓</Text>}
           <Text style={styles.jftTitle}>{jftContent.title}</Text>
-          <Text style={styles.jftPreview}>{jftContent.preview}</Text>
+
+          <Text style={styles.jftPreview}>"{jftContent.quote}"</Text>
           <Text style={styles.tapToRead}>Tap to read full message →</Text>
+          
           </>
         ) : (
           <Text style={styles.errorText}>Unable to load content. Pull to refresh.</Text>
@@ -246,6 +259,7 @@ const styles = StyleSheet.create({
     margin: scale(8),
     
   },
+  /*/
   notePrivacy: {
     fontSize: moderateScale(10),
     color: '#554c60ff',
@@ -253,11 +267,13 @@ const styles = StyleSheet.create({
     marginHorizontal: scale(4),
     marginBottom: scale(8),
   },  
+  /*/
   date: {
     fontSize: moderateScale(16),
     color: '#7B4FD4',
     fontWeight: '600',
-    marginBottom: scale(8),
+    marginBottom: scale(24),
+    textAlign: 'center',
   },
 
   motivationalMessage: {
@@ -281,6 +297,8 @@ const styles = StyleSheet.create({
     borderRadius: scale(16),
     padding: scale(10),
     marginBottom: scale(20),
+  
+
     elevation: 1,
     shadowColor: '#9B6FDD',
     shadowOffset: { width: 0, height: 2 },
@@ -291,7 +309,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     fontWeight: 'bold',
     color: '#2D1B4E',
-    marginBottom: scale(10),
+    marginBottom: scale(4),
     textAlign: 'center',
   },
   
@@ -299,10 +317,12 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(15),
     color: '#5A4A6A',
     lineHeight: scale(16),
+    paddingHorizontal: scale(12),
     marginBottom: scale(12),
+    fontStyle: 'italic',
   },
   tapToRead: {
-    fontSize: moderateScale(14),
+    fontSize: moderateScale(10),
     color: '#9B6FDD',
     fontWeight: '600',
   },
@@ -394,7 +414,7 @@ const styles = StyleSheet.create({
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#7B4FD4',
+    backgroundColor: '#aa95d4ff',
     paddingHorizontal: scale(12),
     paddingVertical: scale(6),
     borderRadius: scale(20),
@@ -411,7 +431,7 @@ const styles = StyleSheet.create({
   streakNumber: {
     fontSize: moderateScale(14),
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#30053aff',
   },
 });
 

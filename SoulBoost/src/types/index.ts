@@ -1,7 +1,10 @@
 export interface JFTContent {
   date: string;
   title: string;
-  content: string;
+  quote: string;
+  reference: string;
+  fullContent: string;
+  justForToday: string;
   preview: string;
 }
 
@@ -10,7 +13,7 @@ export interface DailyEntry {
   gratitudes: string[];
   goal: string;
   wish: string;
-  jftContent?: JFTContent;
+  jftContent: JFTContent;
 }
 
 /**

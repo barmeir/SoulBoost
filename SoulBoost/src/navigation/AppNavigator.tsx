@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import { storage } from '../utils/storage';
 
+
+
 import OnboardingScreen from '../screens/OnboardingScreen';
 import NameInputScreen from '../screens/NameInputScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -50,6 +52,7 @@ const AppNavigator: React.FC = () => {
         contentStyle: { backgroundColor: '#F8F4FF' },
         }}
       >
+        
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen name="NameInput" component={NameInputScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />

@@ -10,6 +10,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, DailyEntry } from '../types';
 import { storage } from '../utils/storage';
 import { dateUtils } from '../utils/dateUtils';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 type HistoryScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'History'>;
@@ -84,6 +86,7 @@ const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
   };
 
   return (
+    <SafeAreaView style={styles.container}>
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
@@ -112,6 +115,7 @@ const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
         )}
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 };
 

@@ -1,8 +1,10 @@
+
 import { JFTContent } from '../types';
 import { storage } from '../utils/storage';
 import { dateUtils } from '../utils/dateUtils';
 
 export const jftService = {
+
   async fetchJFTContent(date?: string): Promise<JFTContent | null> {
     const targetDate = date || dateUtils.getTodayString();
     
@@ -28,7 +30,7 @@ export const jftService = {
       }
 
       const html = await response.text();
-      const content = this.parseJFTContent(html, targetDate);
+      const content = this.parseHTML(html);
       
       if (content) {
         // Cache the content
@@ -42,88 +44,144 @@ export const jftService = {
     }
   },
 
-  parseJFTContent(html: string, date: string): JFTContent | null {
-    try {
-      // Extract the main content from the HTML
-      // The JFT website uses a simple table structure
-      
-      // Find the title (h1 tag contains the meditation title)
-      
-      const titleMatch = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
-      const title = titleMatch ? this.stripHtml(titleMatch[1]) : 'Just for Today';
-        console.log('title', title);
 
-      // Extract content from the table
-      // The content is in <td> tags within the table
-      const tableMatch = html.match(/<table[^>]*>(.*?)<\/table>/is);
+  //const parseHTML = (html: string): JFTContent | null => {
+  parseHTML(html: string,): JFTContent | null {
+      try {
+      // Extract date
+      const dateMatch = html.match(/<h2>(.*?)<\/h2>/);
+      const date = dateMatch ? dateMatch[1] : '';
+
+      // Extract title
+      const titleMatch = html.match(/<h1>(.*?)<\/h1>/);
+      const title = titleMatch ? titleMatch[1] : '';
+
+      // Extract page
+      const pageMatch = html.match(/Page (\d+)/);
+      const page = pageMatch ? pageMatch[1] : '';
+
+      // Extract quote
+      const quoteMatch = html.match(/"<i>(.*?)<\/i>"/s);
+      const quote = quoteMatch ? quoteMatch[1] : '';
+
+      // Extract reference
+      //const referenceMatch = html.match(/Basic Text p\. \d+/);
+      const referenceMatch = html.match(/>\s*([^<]*?p\. *\d+)/i);
+      const reference = referenceMatch ? referenceMatch[1] : '';
+
+
+        
+
+// Extract body: everything after reference and before "Just for Today"
+const bodyMatch = html.match(new RegExp(reference + '([\\s\\S]*?)(?=<b>Just for Today:)', 'i'));
+
+const body = bodyMatch
+  ? bodyMatch[1]
+      .replace(/<br\s*\/?>/gi, '\n')   // convert <br> to newline
+      .replace(/<[^>]+>/g, '')         // remove all other HTML tags
+      .trim()                          // trim leading/trailing whitespace
+  : '';
+
+console.log('reference', reference);
+console.log('body', body);
+
+
+/*/
+
+      // Extract body paragraphs
+      const bodyRegex = /<td align="left">((?:(?!<td|<tr|Just for Today).)*?)<br><br><\/td>/gs;
+      const bodyMatches = html.match(bodyRegex);
+      const body: string[] = [];
       
-      if (!tableMatch) {
-        console.warn('Could not find table in JFT HTML');
-        return null;
+      if (bodyMatches) {
+        bodyMatches.forEach(match => {
+          const text = match
+            .replace(/<td align="left">/g, '')
+            .replace(/<br><br><\/td>/g, '')
+            .replace(/<br><br>/g, '')
+            .trim();
+          
+
+            //. TODO: chack this ------------
+          if (text && !text.includes('"<i>') && !text.includes('Basic Text')) {
+            body.push(text);
+          }
+        });
       }
 
-      // Get all table cell content
-      const tdMatches = tableMatch[1].match(/<td[^>]*>(.*?)<\/td>/gis);
-      
-      if (!tdMatches || tdMatches.length === 0) {
-        console.warn('Could not find table cells in JFT HTML');
-        return null;
-      }
+/*/
 
-      // Combine all td content, excluding the copyright
-      let fullContent = '';
-      for (const td of tdMatches) {
-        const stripped = this.stripHtml(td).trim();
-        // Skip the copyright line, page number, and date
-        if (!stripped.includes('Copyright') 
-          && !stripped.includes('NA World Services') 
-                  && !stripped.match(title)
-          && !stripped.match(/^Page \d+$/)
-          && !stripped.match(/^\w+ \d{1,2}, \d{4}$/)) {  // Skip date in format like "January 18, 2026"
-            //This regex /^\w+ \d{1,2}, \d{4}$/ matches strings that start with a word (month), followed by a space, 1-2 digits (day), a comma, space, and 4 digits (year). It should effectively remove date lines from the content. If the date format varies (e.g., no comma or different order), let me know for adjustments! Test it with the actual HTML to confirm.
-          fullContent += stripped + '\n\n';
-        }
-      }
 
-      fullContent = fullContent.trim();
-      
-      if (!fullContent) {
-        console.warn('Could not extract content from JFT HTML');
-        return null;
-      }
-        console.log('fullContent', fullContent);
-
-      // Create a preview (first 200 characters)
+      const fullContent = body;
       const preview = fullContent.length > 150
         ? fullContent.substring(0, 150) + '...'
         : fullContent;
+           //. TODO: chack this ------------
+
+      // Extract Just for Today
+      const jftMatch = html.match(/<b>Just for Today: <\/b>(.*?)<br>/);
+      const justForToday = jftMatch ? jftMatch[1] : '';
+/*/
+      // Create a preview (first 150 characters)
+      const fullContent = body.join(' ');
+      const preview = fullContent.length > 150
+        ? fullContent.substring(0, 150) + '...'
+        : fullContent;
+/*/
+
+
+
+      
         console.log('title', title);
         console.log('date', date);
+        console.log('quote', quote);
 
-      return {
-        date,
-        title,
-        content: fullContent,
-        preview,
-      };
-    } catch (error) {
-      console.error('Error parsing JFT content:', error);
-      return null;
+
+
+        console.log('reference', reference);
+        console.log('body', body);
+        // console.log('fullContent', fullContent);
+
+        console.log('justForToday', justForToday);
+        console.log('preview', justForToday);
+
+
+      return { date, title, quote, reference, fullContent, justForToday, preview };
+
+
+    
+
+           //. TODO: chack this ------------
+
+        // if (!text) {
+    
+        //   console.warn('Could not extract content from JFT HTML');
+        //   return null;
+        // }
+        //   console.log('fullContent', text);
+
+
+
+        // Create a preview (first 150 characters)
+        /*/
+            const preview = fullContent.length > 150
+
+          ? fullContent.substring(0, 150) + '...'
+          : fullContent;
+          console.log('title', title);
+          console.log('date', date);
+
+        return {
+          date,
+          title,
+          content: fullContent,
+          preview,
+        };
+        /*/
+      } catch (error) {
+        console.error('Error parsing JFT content:', error);
+        return null;
+      }
     }
-  },
 
-  stripHtml(html: string): string {
-    return html
-      .replace(/<script[^>]*>.*?<\/script>/gis, '')
-      .replace(/<style[^>]*>.*?<\/style>/gis, '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'")
-      .replace(/\s+/g, ' ')
-      .trim();
-  },
 };
