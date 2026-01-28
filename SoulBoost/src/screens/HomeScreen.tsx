@@ -17,6 +17,7 @@ import { RootStackParamList, JFTContent, DailyEntry, StreakInfo } from '../types
 import { dateUtils } from '../utils/dateUtils';
 import { jftService } from '../services/jftService';
 import { storage } from '../utils/storage';
+import { GRATITUDE_COUNT } from '../constants';
 import { streakService } from '../services/streakService';
 import { scale, moderateScale, isSmallScreen, isLargeScreen } from '../utils/responsive';
 import { IOSShowPreviewsSetting } from '@notifee/react-native';
@@ -108,7 +109,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     navigation.navigate('History');
   };
 
-  const isGratitudeComplete = dailyEntry?.gratitudes && dailyEntry.gratitudes.filter(g => g).length === 4;
+  const isGratitudeComplete = dailyEntry?.gratitudes && dailyEntry.gratitudes.filter(g => g).length === GRATITUDE_COUNT;
   const isGoalComplete = dailyEntry?.goal && dailyEntry.goal.length > 0;
   const isWishComplete = dailyEntry?.wish && dailyEntry.wish.length > 0;
 
@@ -136,7 +137,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         </View>
         {/* <Text style={styles.notePrivacy}>* Your information stays with you. All data is anonymous, private, and stored only on this device — never on our servers.</Text> */}
         <Text style={styles.date}>{dateUtils.formatDisplayDate(today)}</Text>
-        <Text style={styles.motivationalMessage}>{motivationalMessage}</Text>
+        <Text style={[styles.actionCard, styles.motivationalMessage]}>{motivationalMessage}</Text>
       </View>
 
       <Text style={styles.sectionTitle}>Just for Today</Text>
@@ -184,7 +185,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <Text style={styles.actionDescription}>
             {isGratitudeComplete
               ? "You've shared your gratitude today!"
-              : "What are 4 things you're grateful for today?"}
+              : `What are ${GRATITUDE_COUNT} things you're grateful for today?`}
           </Text>
         </TouchableOpacity>
 
@@ -250,7 +251,7 @@ const styles = StyleSheet.create({
   },
   header: {
     marginTop: scale(10),
-    marginBottom: scale(24),
+    marginBottom: scale(20),
   },
   greeting: {
     fontSize: moderateScale(24),
@@ -270,19 +271,14 @@ const styles = StyleSheet.create({
   /*/
   date: {
     fontSize: moderateScale(16),
-    color: '#7B4FD4',
+    color: '#5e33b3ff',
     fontWeight: '600',
     marginBottom: scale(24),
     textAlign: 'center',
   },
 
   motivationalMessage: {
-    backgroundColor: '#F8F4FF',
-    borderRadius: scale(20),
     fontSize: moderateScale(20),
-    borderColor: '#ebd571ff',
-    borderWidth: scale(3),
-    color: '#2D1B4E',
     fontWeight: '500',
     lineHeight: scale(28),
     textAlign: 'center',
@@ -290,15 +286,15 @@ const styles = StyleSheet.create({
     paddingVertical: scale(4),
     paddingHorizontal: scale(8),
     marginHorizontal: scale(16),
-
+    borderRightWidth: scale(4),
+    borderRightColor: '#bd089cff',
+    borderLeftColor: '#bd089cff',
   },
   jftCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: scale(16),
-    padding: scale(10),
+    padding: scale(8),
     marginBottom: scale(20),
-  
-
     elevation: 1,
     shadowColor: '#9B6FDD',
     shadowOffset: { width: 0, height: 2 },
@@ -348,12 +344,13 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(18),
     fontWeight: 'bold',
     color: '#2D1B4E',
+    marginTop: scale(16),
     marginBottom: scale(8),
   },
   actionCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: scale(12),
-    padding: scale(16),
+    padding: scale(12),
     marginBottom: scale(12),
     borderLeftWidth: scale(4),
     borderLeftColor: '#9B6FDD',

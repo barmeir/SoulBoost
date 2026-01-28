@@ -14,6 +14,7 @@ import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
 import { storage } from '../utils/storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { GRATITUDE_COUNT } from '../constants';
 
 
 type GratitudeInputScreenProps = {
@@ -27,9 +28,11 @@ const GratitudeInputScreen: React.FC<GratitudeInputScreenProps> = ({ navigation,
 
   const loadExistingGratitudes = useCallback(async () => {
     const entry = await storage.getDailyEntry(date);
-    console.log('Loaded entry for date', date, ':', entry);
-    console.log('Existing gratitudes:', entry?.gratitudes);
-    if (entry?.gratitudes) {
+
+    console.debug('Loaded entry for date', date, ':', entry);
+    console.debug('Existing gratitudes:', entry?.gratitudes);
+
+    if (entry?.gratitudes && entry.gratitudes.length === GRATITUDE_COUNT) {
       setGratitudes(entry.gratitudes);
     }
   }, [date]);
@@ -71,8 +74,6 @@ const GratitudeInputScreen: React.FC<GratitudeInputScreenProps> = ({ navigation,
           Taking a moment to appreciate the good things in life can transform your perspective.
         </Text>
 
-
-          <Text >{gratitudes}</Text>
 
         {gratitudes.map((gratitude, index) => (
           <View key={index} style={styles.inputContainer}>
